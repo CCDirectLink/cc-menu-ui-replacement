@@ -18,7 +18,6 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	// Stores image offset data for the menu to extract UI elements from the custom spritesheet with
 	sc.CharMenuGUIConfig = ig.JsonLoadable.extend({
 		cacheType: "Menu",
-		Label: null,
 		Large: null,
 		Small: null,
 		Head: null,
@@ -29,7 +28,6 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	    },
 	    onload: function(a) {
 	    	if (a.DOCTYPE == "MENU_GUI_CONFIG") {
-		    	this.Label = a.Label;
 		    	this.Large = a.Large;
 		    	this.Small = a.Small;
 		    	this.Head = a.Head;
@@ -394,7 +392,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 					if (charConfigs[this.model.name]) {
 						currentChar = this.model.name;
 						sc.MainMenu.Lea = sc.MainMenu.Custom;
-						const imgPath = `media/gui/menu-${charConfigs[this.model.name].Label}.png`;
+						const imgPath = `media/gui/menu-${this.model.name}.png`;
 						sc.MainMenu.CustomLarge.inject({
 							gfx: new ig.Image(imgPath)
 						});
