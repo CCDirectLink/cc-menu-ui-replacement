@@ -2,7 +2,7 @@
 
 Base code by - [Hsifnus](https://github.com/Hsifnus)
 
-Example menu portraits by [GenmaTheSamurai](https://twitter.com/GenmaTheSamurai)
+Example menu portraits by - [GenmaTheSamurai](https://twitter.com/GenmaTheSamurai)
 
 ![Example UI Replacement - Main Menu](https://i.gyazo.com/caed4d2e60802c74022c2b58902bb4e9.png)
 
