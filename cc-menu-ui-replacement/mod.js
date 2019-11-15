@@ -26,7 +26,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 		Label: null,
 		init: function(a) {
             this.parent(a);
-            Label = a;
+            this.Label = a;
         },
 	    getJsonPath: function() {
 	        return ig.root + this.path.toPath("data/menu/", ".json") + ig.getCacheSuffix()
