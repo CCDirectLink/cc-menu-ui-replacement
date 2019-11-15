@@ -23,6 +23,11 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 		Head: null,
 		AreaButton: null,
 		MapFloorButtonContainer: null,
+		Label: null,
+		init: function(a) {
+            this.parent(a);
+            Label = a;
+        },
 	    getJsonPath: function() {
 	        return ig.root + this.path.toPath("data/menu/", ".json") + ig.getCacheSuffix()
 	    },
@@ -33,7 +38,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 		    	this.Head = a.Head;
 		    	this.AreaButton = a.AreaButton;
 		    	this.MapFloorButtonContainer = a.MapFloorButtonContainer;
-		    	charConfigs[a.Name] = this;
+		    	charConfigs[a.ModelName] = this;
 	    	}
 	    },
 	    onCacheCleared: function() {}
@@ -392,7 +397,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 					if (charConfigs[this.model.name]) {
 						currentChar = this.model.name;
 						sc.MainMenu.Lea = sc.MainMenu.Custom;
-						const imgPath = `media/gui/menu-${this.model.name}.png`;
+						const imgPath = `media/gui/menu-${charConfigs[this.model.name].Label}.png`;
 						sc.MainMenu.CustomLarge.inject({
 							gfx: new ig.Image(imgPath)
 						});
