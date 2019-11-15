@@ -47,7 +47,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	// The character name should match the name used for the custom character's other data files
 	// (ex. 'glasses' for C'Tron).
 	// If the current character model has a name not recognized by the custom menu, the UI defaults to Lea.
-	
+
 	// Take a look at assets/data/menu/emilie.json for an example of how a menu GUI config file should look like.
 	// Those offsets correspond to GUI elements found in assets/media/gui/menu-emilie.png
 	const supportedChars = ["emilie"];
@@ -348,8 +348,9 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	sc.CrossCode.inject({
 	    init: function() {
 	        this.parent();
-	       	sc.model.menu.observers = sc.model.menu.observers.filter(function(obs) { return obs.classId !== 673 });
-	       	sc.model.observers = sc.model.observers.filter(function(obs) { return obs.classId !== 673 });
+	        var mainMenuFilter = function(obs) { return !(obs instanceof sc.MainMenu); };
+	       	sc.model.menu.observers = sc.model.menu.observers.filter(mainMenuFilter);
+	       	sc.model.observers = sc.model.observers.filter(mainMenuFilter);
 	        currMenu = new sc.MainMenu;
 	        ig.gui.addGuiElement(currMenu);
 	    }
