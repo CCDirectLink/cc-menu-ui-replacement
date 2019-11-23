@@ -352,7 +352,11 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	    init: function() {
 	        this.parent();
 	        var mainMenuFilter = function(obs) { return !(obs instanceof sc.MainMenu); };
-	       	sc.model.menu.observers = sc.model.menu.observers.filter(mainMenuFilter);
+	        var mainMenuCurrentDisplayFilter = function(obs) { return !(obs instanceof sc.MainMenu.CurrentMenuDisplay); };
+	        var mainMenuLeaFilter = function(obs) { return !(obs instanceof sc.MainMenu.Lea); };
+	       	sc.model.menu.observers = sc.model.menu.observers.filter(mainMenuFilter)
+	       		.filter(mainMenuCurrentDisplayFilter)
+	       		.filter(mainMenuLeaFilter);
 	       	sc.model.observers = sc.model.observers.filter(mainMenuFilter);
 	        currMenu = new sc.MainMenu;
 	        ig.gui.addGuiElement(currMenu);
@@ -367,25 +371,34 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 
     sc.Model.moveObserverTo = function(b, a, idx) {
         if (!a) throw Error("Existing Observer is null!");
-        if (idx == b.observers.length) {
-        	b.observers.splice(idx, 0, a);
-        	return;
+        if (idx != b.observers.length) {
+	        if (idx < 0 || idx >= b.observers.length) throw Error(`Replacement index is invalid! (Got ${idx} when max size is ${b.observers.length})`);
+	    	if (b.observers.indexOf(a) == -1) throw Error("Observer does not exist in model!");
         }
-        if (idx < 0 || idx >= b.observers.length) throw Error(`Replacement index is invalid! (Got ${idx} when max size is ${b.observers.length})`);
-    	if (b.observers.indexOf(a) == -1) throw Error("Observer does not exist in model!");
     	b.observers.erase(a);
         b.observers.splice(idx, 0, a);
     };
 
 	const refreshMenu = function() {
 		ig.gui.removeGuiElement(currMenu);
-		const oldModelIdx = sc.Model.removeObserver(sc.model.menu, currMenu);
-		const oldMenuIdx = sc.Model.removeObserver(sc.model, currMenu);
+		const oldMenuIdx = sc.Model.removeObserver(sc.model.menu, currMenu);
+		const oldMenuDisplayIdx = sc.Model.removeObserver(sc.model.menu, currMenu.menuDisplay);
+		const oldModelIdx = sc.Model.removeObserver(sc.model, currMenu);
+		const oldMenuLeaIdx = currMenu.lea instanceof sc.MainMenu.BaseLea ? sc.Model.removeObserver(sc.model.menu, currMenu.lea) : -1;
 		currMenu.hook.onDetach();
 		currMenu = new sc.MainMenu;
 		ig.gui.addGuiElement(currMenu);
 		if (oldModelIdx != -1) {
 			sc.Model.moveObserverTo(sc.model, currMenu, oldModelIdx);
+		}
+		if (oldMenuIdx != -1) {
+			sc.Model.moveObserverTo(sc.model.menu, currMenu, oldMenuIdx);
+		}
+		if (oldMenuDisplayIdx != -1) {
+			sc.Model.moveObserverTo(sc.model.menu, currMenu.menuDisplay, oldMenuDisplayIdx);
+		}
+		if (oldMenuLeaIdx != -1) {
+			sc.Model.moveObserverTo(sc.model.menu, currMenu.lea, oldMenuLeaIdx);
 		}
 	}
 
