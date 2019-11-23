@@ -367,6 +367,10 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 
     sc.Model.moveObserverTo = function(b, a, idx) {
         if (!a) throw Error("Existing Observer is null!");
+        if (idx == b.observers.length) {
+        	b.observers.splice(idx, 0, a);
+        	return;
+        }
         if (idx < 0 || idx >= b.observers.length) throw Error(`Replacement index is invalid! (Got ${idx} when max size is ${b.observers.length})`);
     	if (b.observers.indexOf(a) == -1) throw Error("Observer does not exist in model!");
     	b.observers.erase(a);
