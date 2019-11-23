@@ -345,23 +345,27 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
     	updateDrawables: headUpdateDrawables
     });
 
-    var currMenu;
+    var currMenu, currPauseScreen;
 
     // Some observer (event listener) manipulation magic done at startup so that the custom menu doesn't spawn duplicate quick menu buttons
 	sc.CrossCode.inject({
 	    init: function() {
 	        this.parent();
-	        var mainMenuFilter = function(obs) { return !(obs instanceof sc.MainMenu); };
-	        var mainMenuCurrentDisplayFilter = function(obs) { return !(obs instanceof sc.MainMenu.CurrentMenuDisplay); };
-	        var mainMenuLeaFilter = function(obs) { return !(obs instanceof sc.MainMenu.Lea); };
-	       	sc.model.menu.observers = sc.model.menu.observers.filter(mainMenuFilter)
-	       		.filter(mainMenuCurrentDisplayFilter)
-	       		.filter(mainMenuLeaFilter);
-	       	sc.model.observers = sc.model.observers.filter(mainMenuFilter);
-	        currMenu = new sc.MainMenu;
-	        ig.gui.addGuiElement(currMenu);
+	        sc.model.menu.observers.forEach((obs, idx) => {
+	        	if (obs instanceof sc.MainMenu) {
+	        		currMenu = obs;
+	        	} else if (obs instanceof sc.PauseScreenGui) {
+	        		currPauseScreen = obs;
+	        	}
+	        })
 	    }
 	});
+
+	sc.Model.removeObservers = function(b, a) {
+		const idxs = a.map(e => b.observers.indexOf(e));
+        a.forEach(e => b.observers.erase(e));
+        return idxs;
+    };
 
 	sc.Model.removeObserver = function(b, a) {
 		const idx = b.observers.indexOf(a);
@@ -371,23 +375,27 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 
     sc.Model.moveObserverTo = function(b, a, idx) {
         if (!a) throw Error("Existing Observer is null!");
-        if (idx != b.observers.length) {
-	        if (idx < 0 || idx >= b.observers.length) throw Error(`Replacement index is invalid! (Got ${idx} when max size is ${b.observers.length})`);
-	    	if (b.observers.indexOf(a) == -1) throw Error("Observer does not exist in model!");
-        }
+        if (idx < 0 || idx > b.observers.length) throw Error(`Replacement index is invalid! (Got ${idx} when max size is ${b.observers.length})`);
+    	if (b.observers.indexOf(a) == -1) throw Error("Observer does not exist in model!");
     	b.observers.erase(a);
         b.observers.splice(idx, 0, a);
     };
 
 	const refreshMenu = function() {
 		ig.gui.removeGuiElement(currMenu);
-		const oldMenuIdx = sc.Model.removeObserver(sc.model.menu, currMenu);
-		const oldMenuDisplayIdx = sc.Model.removeObserver(sc.model.menu, currMenu.menuDisplay);
+		ig.gui.removeGuiElement(currPauseScreen);
+		const oldMenuIdxs = sc.Model.removeObservers(sc.model.menu, [currMenu, currMenu.lea, currMenu.menuDisplay, currPauseScreen]);
+		const oldMenuIdx = oldMenuIdxs[0];
+		const oldMenuLeaIdx = oldMenuIdxs[1];
+		const oldMenuDisplayIdx = oldMenuIdxs[2];
+		const oldPauseScreenIdx = oldMenuIdxs[3];
 		const oldModelIdx = sc.Model.removeObserver(sc.model, currMenu);
-		const oldMenuLeaIdx = currMenu.lea instanceof sc.MainMenu.BaseLea ? sc.Model.removeObserver(sc.model.menu, currMenu.lea) : -1;
 		currMenu.hook.onDetach();
+		currPauseScreen.hook.onDetach();
 		currMenu = new sc.MainMenu;
+		currPauseScreen = new sc.PauseScreenGui;
 		ig.gui.addGuiElement(currMenu);
+		console.log(oldModelIdx, oldMenuIdx, oldMenuDisplayIdx, oldMenuLeaIdx, oldPauseScreenIdx);
 		if (oldModelIdx != -1) {
 			sc.Model.moveObserverTo(sc.model, currMenu, oldModelIdx);
 		}
@@ -399,6 +407,9 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 		}
 		if (oldMenuLeaIdx != -1) {
 			sc.Model.moveObserverTo(sc.model.menu, currMenu.lea, oldMenuLeaIdx);
+		}
+		if (oldPauseScreenIdx != -1) {
+			sc.Model.moveObserverTo(sc.model.menu, currPauseScreen, oldPauseScreenIdx);
 		}
 	}
 
