@@ -345,7 +345,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
     	updateDrawables: headUpdateDrawables
     });
 
-    var currMenu, currPauseScreen;
+    var currMenu;
 
     // Some observer (event listener) manipulation magic done at startup so that the custom menu doesn't spawn duplicate quick menu buttons
 	sc.CrossCode.inject({
@@ -354,8 +354,6 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	        sc.model.menu.observers.forEach((obs, idx) => {
 	        	if (obs instanceof sc.MainMenu) {
 	        		currMenu = obs;
-	        	} else if (obs instanceof sc.PauseScreenGui) {
-	        		currPauseScreen = obs;
 	        	}
 	        })
 	    }
@@ -383,19 +381,15 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 
 	const refreshMenu = function() {
 		ig.gui.removeGuiElement(currMenu);
-		ig.gui.removeGuiElement(currPauseScreen);
-		const oldMenuIdxs = sc.Model.removeObservers(sc.model.menu, [currMenu, currMenu.lea, currMenu.menuDisplay, currPauseScreen]);
+		const oldMenuIdxs = sc.Model.removeObservers(sc.model.menu, [currMenu, currMenu.lea, currMenu.menuDisplay]);
 		const oldMenuIdx = oldMenuIdxs[0];
 		const oldMenuLeaIdx = oldMenuIdxs[1];
 		const oldMenuDisplayIdx = oldMenuIdxs[2];
-		const oldPauseScreenIdx = oldMenuIdxs[3];
 		const oldModelIdx = sc.Model.removeObserver(sc.model, currMenu);
 		currMenu.hook.onDetach();
-		currPauseScreen.hook.onDetach();
 		currMenu = new sc.MainMenu;
-		currPauseScreen = new sc.PauseScreenGui;
 		ig.gui.addGuiElement(currMenu);
-		console.log(oldModelIdx, oldMenuIdx, oldMenuDisplayIdx, oldMenuLeaIdx, oldPauseScreenIdx);
+		console.log(oldModelIdx, oldMenuIdx, oldMenuDisplayIdx, oldMenuLeaIdx);
 		if (oldModelIdx != -1) {
 			sc.Model.moveObserverTo(sc.model, currMenu, oldModelIdx);
 		}
@@ -407,9 +401,6 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 		}
 		if (oldMenuLeaIdx != -1) {
 			sc.Model.moveObserverTo(sc.model.menu, currMenu.lea, oldMenuLeaIdx);
-		}
-		if (oldPauseScreenIdx != -1) {
-			sc.Model.moveObserverTo(sc.model.menu, currPauseScreen, oldPauseScreenIdx);
 		}
 	}
 
