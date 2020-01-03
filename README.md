@@ -2,9 +2,9 @@
 
 Base code by - [Hsifnus](https://github.com/Hsifnus)
 
-Example menu portraits by - [GenmaTheSamurai](https://twitter.com/GenmaTheSamurai)
+Example menu portraits by - [rioreur (new portrait)](https://www.deviantart.com/riolea) and [GenmaTheSamurai (old portrait)](https://twitter.com/GenmaTheSamurai)
 
-![Example UI Replacement - Main Menu](https://i.gyazo.com/caed4d2e60802c74022c2b58902bb4e9.png)
+![Example UI Replacement - Main Menu](https://media.giphy.com/media/ThpPXXUaMnHM4Rh47H/giphy.gif)
 
 This mods gives developers the ability to replace Lea with other character art in the menu UI. The framework allows for variable-sized assets to be put on a single spritesheet and inserted into UI elements such as:
 
