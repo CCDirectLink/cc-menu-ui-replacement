@@ -1,6 +1,1 @@
-{
-	"name": "Menu UI Replacer",
-	"description" : "Replace Lea with the character of your choice in the menu!",
-	"prestart": "mod.js",
-    "version" : "1.0.0"
-}
+{"name":"menu-ui-replacer","version":"1.0.1","description":"Replace Lea with the character of your choice in the menu!","prestart":"mod.js"}
