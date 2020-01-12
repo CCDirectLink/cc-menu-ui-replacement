@@ -94,7 +94,7 @@ ig.module("game.feature.menu.gui.menu-gui-injection").requires(
 	            time: 0.2,
 	            timeFunction: KEY_SPLINES.LINEAR
 	        }
-	    },
+	    }, 
 	    init: function() {
 	        this.parent();
 	        this.hook.size.x =
