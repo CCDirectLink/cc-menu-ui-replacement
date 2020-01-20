@@ -1,6 +1,7 @@
 # cc-menu-ui-replacement
 
 Base code by - [Hsifnus](https://github.com/Hsifnus)
+
 Improved code by [ac2pic](https://github.com/ac2pic)
 
 Example menu portraits by - [rioreur (new portrait)](https://www.deviantart.com/riolea) and [GenmaTheSamurai (old portrait)](https://twitter.com/GenmaTheSamurai)
@@ -27,4 +28,6 @@ This mods gives developers the ability to replace Lea with other character art i
 
 ![Example UI Replacement - Area Map](https://i.gyazo.com/4eb0d6c89f7dedc1982e78031b82baa7.png)
 
-More specific documentation can be found in the Wiki. Do note that the process of adding a new character to the menu UI may require some trial-and-error and fine-tuning to get the asset offsets right.
+More specific documentation can be found in the Wiki. 
+
+Do note that the process of adding a new character to the menu UI may require some trial-and-error and fine-tuning to get the asset offsets right.
