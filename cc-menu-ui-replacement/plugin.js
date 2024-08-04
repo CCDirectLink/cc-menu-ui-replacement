@@ -19,8 +19,6 @@ export default class MenuUiReplacer extends Plugin {
             this.createIcon(copy);
             playerMenus.set(copy.name, copy);
         }
-
-        console.log('Done setting up custom stuff.');
     }
 
     createIcon(config) {
