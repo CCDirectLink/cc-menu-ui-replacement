@@ -119,6 +119,7 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
             addPlayerObserver(this);
         },
         removeObservers() {
+            this.parent();
             removePlayerObserver(this);
         },
 
@@ -137,7 +138,10 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
             }
             this._createButtons(true);
         },
-        modelChanged: onPlayerModelChanged
+        modelChanged(...args) {
+            this.parent(...args)
+            onPlayerModelChanged(...args)
+        }
     });
 
 
