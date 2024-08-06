@@ -4,7 +4,6 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
     function onPlayerModelChanged(model, event) {
         if (model === sc.model.player) {
             if (event === sc.PLAYER_MSG.CONFIG_CHANGED) {
-                console.log('Player model changed!');
                 const playerName = sc.model.player.name;
                 if (customPlayerMenus.has(playerName)) {
                     this.setConfig(customPlayerMenus.get(playerName));
@@ -18,7 +17,6 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
 
     function addPlayerObserver(instance) {
 
-        console.log('Added observer for this', instance);
         sc.Model.addObserver(sc.model.player, instance);
 
     }
@@ -121,6 +119,7 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
             addPlayerObserver(this);
         },
         removeObservers() {
+            this.parent();
             removePlayerObserver(this);
         },
 
@@ -139,7 +138,10 @@ ig.module("replacer.game.feature.menu.gui.main-menu").requires("game.feature.men
             }
             this._createButtons(true);
         },
-        modelChanged: onPlayerModelChanged
+        modelChanged(...args) {
+            this.parent(...args)
+            onPlayerModelChanged(...args)
+        }
     });
 
 

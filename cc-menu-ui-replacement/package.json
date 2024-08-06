@@ -1,6 +1,6 @@
 {
 	"name": "menu-ui-replacer",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "Replace Lea with the character of your choice in the menu!",
 	"module": true,
 	"postload": "postload.js",
