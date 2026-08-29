@@ -1,11 +1,27 @@
 {
     "name": "menu-ui-replacer",
-    "version": "1.0.5",
-    "description": "Replace Lea with the character of your choice in the menu!",
-    "assets": [
-        "assets/data/menu.json"
-    ],
-    "module": true,
-    "plugin": "plugin.js",
-    "postload": "postload.js"
+    "version": "1.0.6",
+    "scripts": {
+        "start": "esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
+        "watch": "esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
+        "build": "esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js --minify-syntax --minify-whitespace src/plugin.ts",
+        "pack": "bun pack.ts",
+        "format": "oxfmt"
+    },
+    "type": "module",
+    "devDependencies": {
+        "@types/bun": "^1.3.14",
+        "bun": "^1.3.14",
+        "esbuild": "^0.28.2",
+        "fflate": "^0.8.3",
+        "oxfmt": "^0.60.0",
+        "typescript": "^7.0.2"
+    },
+    "dependencies": {
+        "@types/chrome": "^0.2.6",
+        "@types/jquery": "^1.10.45",
+        "@types/node": "^26.2.0",
+        "ccmodmanager": "github:CCDirectLink/CCModManager",
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+    }
 }

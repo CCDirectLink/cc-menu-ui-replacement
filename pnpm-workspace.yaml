@@ -1,0 +1,5 @@
+allowBuilds:
+  esbuild: true
+  bun: true
+  node: true
+blockExoticSubdeps: false

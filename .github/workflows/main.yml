@@ -1,0 +1,101 @@
+name: Release pack
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    release:
+        if: startsWith(github.event.head_commit.message, 'vv')
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v6
+              with:
+                  version: latest
+
+            - name: Install Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+                  cache: 'pnpm'
+
+            - name: Install semver
+              run: |
+                  npm i -g semver
+
+            - name: Check commit message
+              id: check_commit_message
+              run: |
+                  version=$(git log --format=%B -n 1 ${{ github.sha }})
+                  version=${version:1}
+                  version_numeric="$(semver "${version:1}")"
+                  if [[ $? = 1 ]]; then
+                    echo "Commit name doesnt match semver format"
+                    exit 1
+                  fi
+                  echo "VERSION=$version" >> $GITHUB_ENV
+                  echo "VERSION_NUMERIC=$version_numeric" >> $GITHUB_ENV
+                  echo "$VERSION" "$version"
+
+                  # Check if the version string contains a hyphen followed by non-empty characters
+                  is_prerealese=false
+                  if [[ "$version" =~ -([0-9A-Za-z-]+) ]]; then
+                      is_prerealese=true
+                  fi
+                  echo "IS_PREREALESE=$is_prerealese" >> $GITHUB_ENV
+
+            - name: Update package.json and ccmod.json
+              run: |
+                  sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION_NUMERIC}\"/" package.json ccmod.json
+                  git add package.json ccmod.json
+
+            - name: Update CHANGELOG.md
+              run: |
+                  sed -i "/\[Unreleased\]/a ## [$VERSION_NUMERIC] newDateHere" ./CHANGELOG.md
+                  sed -i "s/newDateHere/$(date '+%Y-%m-%d')/g" ./CHANGELOG.md
+                  if [ $IS_PREREALESE = false ]; then 
+                    git add ./CHANGELOG.md
+                  fi
+
+            - name: Commit changes
+              run: |
+                  git config --global user.email "${GITHUB_ACTOR_EMAIL}"
+                  git config --global user.name "${GITHUB_ACTOR}"
+                  git config --global --add safe.directory "$GITHUB_WORKSPACE"
+                  git commit -m "$VERSION"
+                  git push origin HEAD:main
+
+            - name: Get Changelog Entry
+              id: changelog_reader
+              uses: mindsers/changelog-reader-action@v2
+              with:
+                  validation_depth: 10
+                  version: ${{ steps.tag_name.outputs.current_version }}
+                  path: ./CHANGELOG.md
+
+            - name: Create and push a new tag
+              run: |
+                  git tag -a "$VERSION" -m "Version $VERSION"
+                  git push origin "$VERSION"
+
+            - name: Install node dependencies
+              run: pnpm install
+
+            - name: Run pack.sh
+              run: pnpm run pack
+
+            - name: Create release
+              id: create_release
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: |
+                      *.ccmod
+                  prerelease: ${{ env.IS_PREREALESE }}
+                  name: ${{ env.VERSION }}
+                  tag_name: ${{ env.VERSION }}
+                  body: ${{ steps.changelog_reader.outputs.changes }}

@@ -1,5 +1,7 @@
 # cc-menu-ui-replacement
 
+[![CCModManager badge](https://raw.githubusercontent.com/CCDirectLink/CCModManager/refs/heads/master/icon/badge.png)](https://github.com/CCDirectLink/CCModManager)
+
 Base code by - [Hsifnus](https://github.com/Hsifnus)
 
 Improved code by [ac2pic](https://github.com/ac2pic)
@@ -31,3 +33,14 @@ This mods gives developers the ability to replace Lea with other character art i
 More specific documentation can be found in the Wiki. 
 
 Do note that the process of adding a new character to the menu UI may require some trial-and-error and fine-tuning to get the asset offsets right.
+
+## Building
+
+```bash
+git clone https://github.com/krypciak/cc-ts-template-esbuild
+cd cc-ts-template-esbuild
+pnpm install
+pnpm run start
+# this should return no errors (hopefully)
+pnpm tsc
+```
