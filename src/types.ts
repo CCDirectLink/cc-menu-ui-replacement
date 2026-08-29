@@ -20,78 +20,40 @@ export type Mod1 = Writable<Mod> & {
           }
     )
 
-export interface PlayerConfigBase {
+interface ImageConfig {
+    offX: number
+    offY: number
+    sizeX: number
+    sizeY: number
+}
+
+interface ImageConfigGfxOff extends ImageConfig {
+    gfxOffX: number
+    gfxOffY: number
+}
+
+export interface MenuUIReplacerPlayerConfigBase {
     DOCTYPE: 'MENU_GUI_CONFIG'
     name: string
 
-    Large: {
-        gfxOffX: number
-        gfxOffY: number
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
-    Small: {
-        gfxOffX: number
-        gfxOffY: number
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
-    Head: {
-        gfxOffX: number
-        gfxOffY: number
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
-    AreaButton: {
-        gfxOffX: number
-        gfxOffY: number
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
-    MapFloorButtonContainer: {
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
-    TinyHead?: {
-        offX: number
-        offY: number
-        sizeX: number
-        sizeY: number
-    }
+    Large: ImageConfigGfxOff
+    Small: ImageConfigGfxOff
+    Head: ImageConfigGfxOff
+    AreaButton: ImageConfigGfxOff
+    MapFloorButtonContainer: ImageConfig
+    TinyHead?: ImageConfig
 }
 
-export interface CustomPlayerConfig extends PlayerConfigBase {
+export interface MenuUIReplacerPlayerConfig extends MenuUIReplacerPlayerConfigBase {
     gfx: ig.Image
     icon: ig.ImageGui
     menuGfx: ig.Image
 }
-export type CustomPlayerMenus = Map<string, CustomPlayerConfig>
 
-export interface RawCustomPlayerConfig extends PlayerConfigBase {
+export interface MenuUIReplacerPlayerConfigRaw extends MenuUIReplacerPlayerConfigBase {
     gfx: string
 }
 
-export interface TemplateImageSettings {
-    width: number
-    height: number
-    clearInstructions: {
-        x: number
-        y: number
-        w: number
-        h: number
-    }[]
-}
-
 declare global {
-    var customPlayerMenus: CustomPlayerMenus
+    var customPlayerMenus: Map<string, MenuUIReplacerPlayerConfig>
 }

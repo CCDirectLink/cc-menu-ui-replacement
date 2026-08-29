@@ -1,7 +1,18 @@
 import type { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
-import type { Mod1, CustomPlayerConfig, RawCustomPlayerConfig, TemplateImageSettings } from './types'
+import type { Mod1, MenuUIReplacerPlayerConfig, MenuUIReplacerPlayerConfigRaw } from './types'
 import { setModMetadata } from './mod-metadata'
 import { injectPostload as injectMenu } from './main-menu'
+
+interface TemplateImageSettings {
+    width: number
+    height: number
+    clearInstructions: {
+        x: number
+        y: number
+        w: number
+        h: number
+    }[]
+}
 
 export default class MenuUiReplacer implements PluginClass {
     constructor(mod: Mod1) {
@@ -13,23 +24,22 @@ export default class MenuUiReplacer implements PluginClass {
 
         const playerMenus = (window.customPlayerMenus = new Map())
 
-        let customMenuGfx
-        if (menus.length) {
-            customMenuGfx = await this._createCustomMenu()
-        }
+        if (menus.length > 0) {
+            const customMenuGfx = await this._createCustomMenu()
 
-        for (const menu of menus) {
-            const copy = JSON.parse(JSON.stringify(menu))
-            copy.menuGfx = customMenuGfx
-            copy.gfx = new ig.Image(menu.gfx)
-            this.createIcon(copy)
-            playerMenus.set(copy.name, copy)
+            for (const menu of menus) {
+                const copy: MenuUIReplacerPlayerConfig = JSON.parse(JSON.stringify(menu))
+                copy.menuGfx = customMenuGfx
+                copy.gfx = new ig.Image(menu.gfx)
+                this.createIcon(copy)
+                playerMenus.set(copy.name, copy)
+            }
         }
 
         injectMenu()
     }
 
-    createIcon(config: CustomPlayerConfig) {
+    createIcon(config: MenuUIReplacerPlayerConfig) {
         const gfx = config.gfx
         const { offX, offY, sizeX, sizeY } = config.MapFloorButtonContainer
         const iconGfx = new ig.ImageGui(gfx, offX, offY, sizeX, sizeY)
@@ -51,7 +61,7 @@ export default class MenuUiReplacer implements PluginClass {
     }
 
     getMenus() {
-        return new Promise<RawCustomPlayerConfig[]>((resolve, reject) => {
+        return new Promise<MenuUIReplacerPlayerConfigRaw[]>((resolve, reject) => {
             $.ajax({
                 dataType: 'json',
                 url: 'data/menu.json',
@@ -80,18 +90,8 @@ export default class MenuUiReplacer implements PluginClass {
             width: baseImage.width,
             height: baseImage.height,
             clearInstructions: [
-                {
-                    x: 280,
-                    y: 424,
-                    w: 16,
-                    h: 11,
-                },
-                {
-                    x: 280,
-                    y: 472,
-                    w: 126,
-                    h: 35,
-                },
+                { x: 280, y: 424, w: 16, h: 11 },
+                { x: 280, y: 472, w: 126, h: 35 },
             ],
         }
 

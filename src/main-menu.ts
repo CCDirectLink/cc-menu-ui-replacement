@@ -1,9 +1,9 @@
-import type { CustomPlayerConfig } from './types'
+import type { MenuUIReplacerPlayerConfig } from './types'
 
 interface ConfigSettable {
-    config: Nullable<CustomPlayerConfig> | undefined
+    config: Nullable<MenuUIReplacerPlayerConfig> | undefined
 
-    setConfig(this: this, config: Nullable<CustomPlayerConfig> | undefined): void
+    setConfig(this: this, config: Nullable<MenuUIReplacerPlayerConfig> | undefined): void
 }
 
 declare global {
@@ -27,41 +27,25 @@ declare global {
     }
 }
 
+function getCurrentConfig(): Nullable<MenuUIReplacerPlayerConfig> | undefined {
+    const playerName = sc.model.player.name
+    return customPlayerMenus.get(playerName)
+}
+
+function onPlayerModelChanged(obj: ConfigSettable, model: sc.Model, message: number, _data: unknown) {
+    if (model != sc.model.player) return
+    if (message !== sc.PLAYER_MSG.CONFIG_CHANGED) return
+
+    obj.setConfig(getCurrentConfig())
+}
+
 export function injectPostload() {
-    function onPlayerModelChanged(
-        this: { setConfig(config: Nullable<CustomPlayerConfig> | undefined): void },
-        model: sc.Model,
-        message: number,
-        _data: unknown
-    ) {
-        if (model === sc.model.player) {
-            if (message === sc.PLAYER_MSG.CONFIG_CHANGED) {
-                const playerName = sc.model.player.name
-                if (customPlayerMenus.has(playerName)) {
-                    this.setConfig(customPlayerMenus.get(playerName))
-                } else {
-                    this.setConfig(null)
-                }
-            }
-        }
-    }
-
-    function addPlayerObserver(instance: sc.Model.Observer) {
-        sc.Model.addObserver(sc.model.player, instance)
-    }
-
-    function removePlayerObserver(instance: sc.Model.Observer) {
-        sc.Model.removeObserver(sc.model.player, instance)
-    }
-
     sc.MainMenu.LeaLarge.inject({
-        config: null,
-
         init(...args) {
             this.parent(...args)
-            addPlayerObserver(this)
+            sc.Model.addObserver(sc.model.player, this)
         },
-        setConfig(config: Nullable<CustomPlayerConfig> | undefined) {
+        setConfig(config: Nullable<MenuUIReplacerPlayerConfig> | undefined) {
             this.config = config
         },
         updateDrawables(renderer) {
@@ -74,15 +58,16 @@ export function injectPostload() {
             this.parent(renderer)
         },
 
-        modelChanged: onPlayerModelChanged,
+        modelChanged(...args) {
+            this.parent?.(...args)
+            onPlayerModelChanged(this, ...args)
+        },
     })
 
     sc.MainMenu.LeaSmall.inject({
-        config: null,
-
         init(...args) {
             this.parent(...args)
-            addPlayerObserver(this)
+            sc.Model.addObserver(sc.model.player, this)
         },
         setConfig(config) {
             this.config = config
@@ -96,12 +81,15 @@ export function injectPostload() {
             }
             this.parent(renderer)
         },
-        modelChanged: onPlayerModelChanged,
+        modelChanged(...args) {
+            this.parent?.(...args)
+            onPlayerModelChanged(this, ...args)
+        },
     })
 
     sc.AreaButton.inject({
         updateDrawables(renderer) {
-            const currentConfig = customPlayerMenus.get(sc.model.player.name)
+            const currentConfig = getCurrentConfig()
             const old = this.gfx
             if (currentConfig) {
                 this.gfx = currentConfig.menuGfx
@@ -119,28 +107,19 @@ export function injectPostload() {
 
     // just patch leaIcon
     sc.MapFloorButtonContainer.inject({
-        config: null,
-
         init(...args) {
             this.parent(...args)
             this.originalCopy = this.leaIcon
 
-            addPlayerObserver(this)
-
-            if (sc.model.player.name !== 'Lea') {
-                const config = customPlayerMenus.get(sc.model.player.name)
-                if (config) {
-                    this.setConfig(config)
-                }
-            }
+            this.setConfig(getCurrentConfig())
         },
         addObservers() {
             this.parent()
-            addPlayerObserver(this)
+            sc.Model.addObserver(sc.model.player, this)
         },
         removeObservers() {
             this.parent()
-            removePlayerObserver(this)
+            sc.Model.removeObserver(sc.model.player, this)
         },
         setConfig(config) {
             this.config = config
@@ -158,35 +137,41 @@ export function injectPostload() {
         },
         modelChanged(...args) {
             this.parent(...args)
-            onPlayerModelChanged.call(this, ...args)
+            onPlayerModelChanged(this, ...args)
         },
     })
 
-    function customStatusDrawables<T extends sc.ItemStatusDefault | sc.StatusViewMainParameters, R>(
-        this: T & { parent: (renderer: ig.GuiRenderer) => R },
-        renderer: ig.GuiRenderer
+    function customStatusDrawables(
+        obj: sc.ItemStatusDefault | sc.StatusViewMainParameters,
+        renderer: ig.GuiRenderer,
+        currentConfig: MenuUIReplacerPlayerConfig
     ) {
-        const currentConfig = customPlayerMenus.get(sc.model.player.name)
-        if (currentConfig) {
-            const old = this.menuGfx
-            this.menuGfx = currentConfig.menuGfx
-            ig.BoxGui.prototype.updateDrawables.call(this, renderer)
-            const gfx = currentConfig.gfx
-            const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.Head
-            renderer.addGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
-            renderer.addGfx(this.statusGfx, 64, 5, 104, 32 + sc.model.player.currentElementMode * 24, 24, 24)
-            this.menuGfx = old
-        } else {
-            this.parent(renderer)
-        }
+        const old = obj.menuGfx
+        obj.menuGfx = currentConfig.menuGfx
+        ig.BoxGui.prototype.updateDrawables.call(obj, renderer)
+        const gfx = currentConfig.gfx
+        const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.Head
+        renderer.addGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
+        renderer.addGfx(obj.statusGfx, 64, 5, 104, 32 + sc.model.player.currentElementMode * 24, 24, 24)
+        obj.menuGfx = old
     }
 
     sc.ItemStatusDefault.inject({
-        updateDrawables: customStatusDrawables,
+        updateDrawables(renderer) {
+            const currentConfig = getCurrentConfig()
+            if (!currentConfig) return this.parent(renderer)
+
+            customStatusDrawables(this, renderer, currentConfig)
+        },
     })
 
     sc.StatusViewMainParameters.inject({
-        updateDrawables: customStatusDrawables,
+        updateDrawables(renderer) {
+            const currentConfig = getCurrentConfig()
+            if (!currentConfig) return this.parent(renderer)
+
+            customStatusDrawables(this, renderer, currentConfig)
+        },
     })
 
     sc.SocialPartyBox.inject({
@@ -221,17 +206,16 @@ export function injectPostload() {
     sc.SocialMenu.inject({
         addObservers() {
             this.parent()
-            addPlayerObserver(this)
+            sc.Model.addObserver(sc.model.player, this)
         },
         removeObservers() {
             this.parent()
-            removePlayerObserver(this)
+            sc.Model.removeObserver(sc.model.player, this)
         },
         modelChanged(model, message, data) {
+            this.parent(model, message, data)
             if (sc.model.player === model) {
                 this.party.updatePartyLeader()
-            } else {
-                this.parent(model, message, data)
             }
         },
     })
