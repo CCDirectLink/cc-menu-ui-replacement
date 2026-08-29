@@ -7,7 +7,7 @@ import ccmod from './ccmod.json'
 
 await $`rm -f ${ccmod.id}*`.nothrow().quiet()
 
-await $`bun run build`
+await $`bun run start`
 
 const tasks: Promise<void>[] = []
 const zipFiles: Zippable = {}
