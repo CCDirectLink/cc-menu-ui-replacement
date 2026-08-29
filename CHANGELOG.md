@@ -11,3 +11,7 @@
 ### Chaned
 
 - Rewrite to Typescript
+
+### Fixed
+
+- Fix the player head in the map menu being positioned incorrectly

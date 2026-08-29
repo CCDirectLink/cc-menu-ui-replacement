@@ -89,18 +89,20 @@ export function injectPostload() {
 
     sc.AreaButton.inject({
         updateDrawables(renderer) {
-            this.parent(renderer)
-
             const currentConfig = getCurrentConfig()
-            if (!currentConfig?.AreaButton) return
+            if (!currentConfig?.AreaButton) return this.parent(renderer)
             const old = this.gfx
             if (currentConfig) {
                 this.gfx = currentConfig.menuGfx
             }
 
+            this.parent(renderer)
+
             if (currentConfig && this.activeArea) {
                 const gfx = currentConfig.gfx
-                const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.AreaButton
+                let { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.AreaButton
+                if (gfxOffX == 0) gfxOffX = -11
+                if (gfxOffY == 0) gfxOffY = -8
                 renderer.addGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
             }
             this.gfx = old
