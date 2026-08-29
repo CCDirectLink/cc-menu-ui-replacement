@@ -49,7 +49,7 @@ export function injectPostload() {
             this.config = config
         },
         updateDrawables(renderer) {
-            if (this.config) {
+            if (this.config?.Large) {
                 const gfx = this.config.gfx
                 const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = this.config.Large
                 renderer.addDraw().setGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
@@ -73,7 +73,7 @@ export function injectPostload() {
             this.config = config
         },
         updateDrawables(renderer) {
-            if (this.config) {
+            if (this.config?.Small) {
                 const gfx = this.config.gfx
                 const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = this.config.Small
                 renderer.addDraw().setGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
@@ -89,13 +89,15 @@ export function injectPostload() {
 
     sc.AreaButton.inject({
         updateDrawables(renderer) {
+            this.parent(renderer)
+
             const currentConfig = getCurrentConfig()
+            if (!currentConfig?.AreaButton) return
             const old = this.gfx
             if (currentConfig) {
                 this.gfx = currentConfig.menuGfx
             }
 
-            this.parent(renderer)
             if (currentConfig && this.activeArea) {
                 const gfx = currentConfig.gfx
                 const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.AreaButton
@@ -126,7 +128,7 @@ export function injectPostload() {
             this.updateIcon()
         },
         updateIcon() {
-            if (this.config) {
+            if (this.config?.icon) {
                 this.leaIcon.doStateTransition('HIDDEN', true)
                 this.leaIcon = this.config.icon
                 this.leaIcon.doStateTransition('HIDDEN', true)
@@ -146,11 +148,12 @@ export function injectPostload() {
         renderer: ig.GuiRenderer,
         currentConfig: MenuUIReplacerPlayerConfig
     ) {
+        const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.Head!
+
         const old = obj.menuGfx
         obj.menuGfx = currentConfig.menuGfx
         ig.BoxGui.prototype.updateDrawables.call(obj, renderer)
         const gfx = currentConfig.gfx
-        const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.Head
         renderer.addGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
         renderer.addGfx(obj.statusGfx, 64, 5, 104, 32 + sc.model.player.currentElementMode * 24, 24, 24)
         obj.menuGfx = old
@@ -159,7 +162,7 @@ export function injectPostload() {
     sc.ItemStatusDefault.inject({
         updateDrawables(renderer) {
             const currentConfig = getCurrentConfig()
-            if (!currentConfig) return this.parent(renderer)
+            if (!currentConfig?.Head) return this.parent(renderer)
 
             customStatusDrawables(this, renderer, currentConfig)
         },
@@ -168,7 +171,7 @@ export function injectPostload() {
     sc.StatusViewMainParameters.inject({
         updateDrawables(renderer) {
             const currentConfig = getCurrentConfig()
-            if (!currentConfig) return this.parent(renderer)
+            if (!currentConfig?.Head) return this.parent(renderer)
 
             customStatusDrawables(this, renderer, currentConfig)
         },

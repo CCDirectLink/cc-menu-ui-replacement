@@ -32,6 +32,7 @@ export default class MenuUiReplacer implements PluginClass {
                 copy.menuGfx = customMenuGfx
                 copy.gfx = new ig.Image(menu.gfx)
                 this.createIcon(copy)
+
                 playerMenus.set(copy.name, copy)
             }
         }
@@ -40,6 +41,8 @@ export default class MenuUiReplacer implements PluginClass {
     }
 
     createIcon(config: MenuUIReplacerPlayerConfig) {
+        if (!config.MapFloorButtonContainer) return
+
         const gfx = config.gfx
         const { offX, offY, sizeX, sizeY } = config.MapFloorButtonContainer
         const iconGfx = new ig.ImageGui(gfx, offX, offY, sizeX, sizeY)

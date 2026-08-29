@@ -36,17 +36,17 @@ export interface MenuUIReplacerPlayerConfigBase {
     DOCTYPE: 'MENU_GUI_CONFIG'
     name: string
 
-    Large: ImageConfigGfxOff
-    Small: ImageConfigGfxOff
-    Head: ImageConfigGfxOff
-    AreaButton: ImageConfigGfxOff
-    MapFloorButtonContainer: ImageConfig
+    Large?: ImageConfigGfxOff
+    Small?: ImageConfigGfxOff
+    Head?: ImageConfigGfxOff
+    AreaButton?: ImageConfigGfxOff
+    MapFloorButtonContainer?: ImageConfig
     TinyHead?: ImageConfig
 }
 
 export interface MenuUIReplacerPlayerConfig extends MenuUIReplacerPlayerConfigBase {
     gfx: ig.Image
-    icon: ig.ImageGui
+    icon?: ig.ImageGui
     menuGfx: ig.Image
 }
 

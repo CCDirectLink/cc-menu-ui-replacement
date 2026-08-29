@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add support for partial configs
+
 ### Chaned
 
 - Rewrite to Typescript
