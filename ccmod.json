@@ -1,7 +1,7 @@
 {
     "id": "menu-ui-replacer",
     "title": "menu-ui-replacer",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "description": "Replace Lea with the character of your choice in the menu!",
     "repository": "https://github.com/CCDirectLink/cc-menu-ui-replacement",
     "tags": ["library"],
