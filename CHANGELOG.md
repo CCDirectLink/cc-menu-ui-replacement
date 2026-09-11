@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add player icon on map menu display from cc-multibakery
+
 ## [1.1.0] 2026-08-29
 
 ### Added

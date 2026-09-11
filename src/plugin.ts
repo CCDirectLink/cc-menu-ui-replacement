@@ -2,6 +2,8 @@ import type { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import type { Mod1, MenuUIReplacerPlayerConfig, MenuUIReplacerPlayerConfigRaw } from './types'
 import { setModMetadata } from './mod-metadata'
 import { injectPostload as injectMenu } from './main-menu'
+import { injectMapOverlay } from './map-overlay'
+import { registerOpts } from './options'
 
 interface TemplateImageSettings {
     width: number
@@ -20,6 +22,9 @@ export default class MenuUiReplacer implements PluginClass {
     }
 
     async prestart() {
+        registerOpts()
+        injectMapOverlay()
+
         const menus = await this.getMenus()
 
         const playerMenus = (window.customPlayerMenus = new Map())
