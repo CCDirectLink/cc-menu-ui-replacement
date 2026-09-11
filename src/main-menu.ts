@@ -1,3 +1,4 @@
+import { Opts } from './options'
 import type { MenuUIReplacerPlayerConfig } from './types'
 
 interface ConfigSettable {
@@ -49,7 +50,7 @@ export function injectPostload() {
             this.config = config
         },
         updateDrawables(renderer) {
-            if (this.config?.Large) {
+            if (this.config?.Large && Opts.mainMenuReplace) {
                 const gfx = this.config.gfx
                 const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = this.config.Large
                 renderer.addDraw().setGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
@@ -73,7 +74,7 @@ export function injectPostload() {
             this.config = config
         },
         updateDrawables(renderer) {
-            if (this.config?.Small) {
+            if (this.config?.Small && Opts.mainMenuReplace) {
                 const gfx = this.config.gfx
                 const { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = this.config.Small
                 renderer.addDraw().setGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
@@ -90,7 +91,7 @@ export function injectPostload() {
     sc.AreaButton.inject({
         updateDrawables(renderer) {
             const currentConfig = getCurrentConfig()
-            if (!currentConfig?.AreaButton) return this.parent(renderer)
+            if (!currentConfig?.AreaButton || !Opts.mapMenuReplace) return this.parent(renderer)
             const old = this.gfx
             if (currentConfig) {
                 this.gfx = currentConfig.menuGfx
@@ -130,7 +131,7 @@ export function injectPostload() {
             this.updateIcon()
         },
         updateIcon() {
-            if (this.config?.icon) {
+            if (this.config?.icon && Opts.mapMenuReplace) {
                 this.leaIcon.doStateTransition('HIDDEN', true)
                 this.leaIcon = this.config.icon
                 this.leaIcon.doStateTransition('HIDDEN', true)
@@ -164,7 +165,7 @@ export function injectPostload() {
     sc.ItemStatusDefault.inject({
         updateDrawables(renderer) {
             const currentConfig = getCurrentConfig()
-            if (!currentConfig?.Head) return this.parent(renderer)
+            if (!currentConfig?.Head || !Opts.inventoryMenuReplace) return this.parent(renderer)
 
             customStatusDrawables(this, renderer, currentConfig)
         },
@@ -173,7 +174,7 @@ export function injectPostload() {
     sc.StatusViewMainParameters.inject({
         updateDrawables(renderer) {
             const currentConfig = getCurrentConfig()
-            if (!currentConfig?.Head) return this.parent(renderer)
+            if (!currentConfig?.Head || !Opts.inventoryMenuReplace) return this.parent(renderer)
 
             customStatusDrawables(this, renderer, currentConfig)
         },

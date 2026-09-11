@@ -15,7 +15,25 @@ export function registerOpts() {
                     playerIconMapOverlay: {
                         type: 'CHECKBOX',
                         name: 'Player icon map overlay',
-                        description: 'Do not print out the vanilla startup messages into dev console',
+                        description: 'Show a player head icon in the position of the player on the map menu',
+                        init: true,
+                    },
+                    mainMenuReplace: {
+                        type: 'CHECKBOX',
+                        name: 'Main menu replace',
+                        description: 'Replace the big Lea portrait in the main menu, equipment menu and status menu',
+                        init: true,
+                    },
+                    inventoryMenuReplace: {
+                        type: 'CHECKBOX',
+                        name: 'Inventory menu replace',
+                        description: 'Replace the small Lea portrait in the inventory menu and status menu',
+                        init: true,
+                    },
+                    mapMenuReplace: {
+                        type: 'CHECKBOX',
+                        name: 'Map menu replace',
+                        description: 'Replace the tiny Lea head in the map menu and area menu',
                         init: true,
                     },
                 },
