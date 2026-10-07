@@ -1,5 +1,5 @@
 import { Opts } from './options'
-import type { MenuUIReplacerPlayerConfig } from './types'
+import type { ImageConfigGfxOff, MenuUIReplacerPlayerConfig } from './types'
 
 interface ConfigSettable {
     config: Nullable<MenuUIReplacerPlayerConfig> | undefined
@@ -24,6 +24,16 @@ declare global {
             isHidden?: boolean
 
             updatePartyLeader(this: this): void
+        }
+
+        interface AreaButton {
+            drawPlayerIcon(
+                this: this,
+                renderer: ig.GuiRenderer,
+                playerIconGfx: ig.Image,
+                posConfig: ImageConfigGfxOff,
+                order: number
+            ): void
         }
     }
 }
@@ -88,25 +98,57 @@ export function injectPostload() {
         },
     })
 
+    const leaAreaButtonConfig: ImageConfigGfxOff = {
+        gfxOffX: -11,
+        gfxOffY: -8,
+        offX: 280,
+        offY: 424,
+        sizeX: 16,
+        sizeY: 11,
+    }
     sc.AreaButton.inject({
+        drawPlayerIcon(renderer, playerIconGfx, config, order) {
+            let { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = config
+            if (gfxOffX == 0) gfxOffX = -11
+            if (gfxOffY == 0) gfxOffY = -8
+
+            const arrowFlipX = order % 2 == 1
+            const arrowFlipY = order >= 2
+            const arrowX = arrowFlipX ? 11 : 1
+            const arrowY = arrowFlipY ? 12 : 2
+            // arrow
+            renderer.addGfx(this.gfx, arrowX, arrowY, 304, 440, 3, 3, arrowFlipX, arrowFlipY)
+
+            if (arrowFlipX) gfxOffX += 21
+            if (arrowFlipY) gfxOffY += 23
+
+            // head
+            renderer.addGfx(playerIconGfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
+        },
         updateDrawables(renderer) {
-            const currentConfig = getCurrentConfig()
-            if (!currentConfig?.AreaButton || !Opts.mapMenuReplace) return this.parent(renderer)
-            const old = this.gfx
-            if (currentConfig) {
-                this.gfx = currentConfig.menuGfx
-            }
+            if (this.focus) renderer.addGfx(this.gfx, -3, -2, 421, 173, 21, 21).setCompositionMode('lighter')
+            renderer.addGfx(this.gfx, 4, 4, 328 + this.icon, 456 + (this.activeArea ? 8 : 0), 8, 8)
 
-            this.parent(renderer)
-
-            if (currentConfig && this.activeArea) {
-                const gfx = currentConfig.gfx
-                let { gfxOffX, gfxOffY, offX, offY, sizeX, sizeY } = currentConfig.AreaButton
-                if (gfxOffX == 0) gfxOffX = -11
-                if (gfxOffY == 0) gfxOffY = -8
-                renderer.addGfx(gfx, gfxOffX, gfxOffY, offX, offY, sizeX, sizeY)
+            let order = 0
+            const playerInfos = sc.map.getPlayerInfos()
+            if (playerInfos.length > 1) {
+                const i = playerInfos.findIndex(entry => entry.username == ig.game.playerEntity.username)
+                if (i != -1) {
+                    playerInfos.unshift(...playerInfos.splice(i, 1))
+                }
             }
-            this.gfx = old
+            for (const entry of playerInfos) {
+                if (entry.area != this.key) continue
+
+                const config = customPlayerMenus.get(entry.character)
+                const hasConfig = config?.AreaButton && Opts.mapMenuReplace
+
+                const playerIconGfx = hasConfig ? config.gfx : this.gfx
+                const posConfig = hasConfig ? config.AreaButton! : leaAreaButtonConfig
+
+                this.drawPlayerIcon(renderer, playerIconGfx, posConfig, order++)
+                if (order >= 4) break
+            }
         },
     })
 

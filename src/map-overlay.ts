@@ -30,6 +30,7 @@ interface PlayerInfo {
     username: string
     character: string
     tpInfo: { map: string; marker?: Nullable<string> }
+    area: string
     pos: Vec2
 }
 
@@ -37,6 +38,11 @@ declare global {
     namespace sc {
         interface MapModel {
             getPlayerInfos(this: this): PlayerInfo[]
+        }
+    }
+    namespace ig.ENTITY {
+        interface Player {
+            username?: string
         }
     }
 }
@@ -58,9 +64,10 @@ export function injectMapOverlay() {
             const player = ig.game.playerEntity
             return [
                 {
-                    username: '',
+                    username: player.username ?? '',
                     character: sc.model.player.name,
                     tpInfo: { map: ig.game.mapName.toPath('', '').toCamel() },
+                    area: sc.map?.currentPlayerArea?.path,
                     pos: {
                         x: player.coll.pos.x / mapSize.x,
                         y: (player.coll.pos.y - player.coll.pos.z) / mapSize.y,

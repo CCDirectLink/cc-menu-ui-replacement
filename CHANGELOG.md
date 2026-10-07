@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add support for drawing multiple player heads on the world view menu
+
 ## [1.2.0] 2026-09-11
 
 ### Added

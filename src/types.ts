@@ -20,14 +20,14 @@ export type Mod1 = Writable<Mod> & {
           }
     )
 
-interface ImageConfig {
+export interface ImageConfig {
     offX: number
     offY: number
     sizeX: number
     sizeY: number
 }
 
-interface ImageConfigGfxOff extends ImageConfig {
+export interface ImageConfigGfxOff extends ImageConfig {
     gfxOffX: number
     gfxOffY: number
 }
